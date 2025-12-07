@@ -1,0 +1,16 @@
+[Unit]
+Description=alive service
+After=network.target
+
+[Service]
+ExecStart=/tmp/runnv/alive.sh
+Restart=always
+RestartSec=5s
+User=root
+Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=monitor_tomcat
+
+[Install]
+WantedBy=multi-user.target

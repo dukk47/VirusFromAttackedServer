@@ -1,0 +1,11 @@
+[Unit]
+Description=Monero miner service
+
+[Service]
+ExecStart=/root/c3pool/xmrig --config=/root/c3pool/config.json
+Restart=always
+Nice=10
+CPUWeight=1
+
+[Install]
+WantedBy=multi-user.target

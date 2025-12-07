@@ -2,44 +2,48 @@
 
 Collected on: 2025-12-07
 
-## Files
+## Infection Summary
 
-### linux.sh
-Malicious script downloaded every minute via cronjob from `https://repositorylinux.xyz/linux.sh`
-- Downloads and executes `linuxsys` cryptominer
-- Sources: GitHub (whereveryouare666/linuxsys), pastebin, dodoma.shop
+This server was heavily compromised with **multiple persistence mechanisms** that reinstall each other.
 
-### fake-curl
-Trojanized curl binary placed in `/usr/local/bin/curl` to intercept curl commands
-- Statically linked, stripped ELF binary
-- Likely used to inject mining payloads
+## Binaries
 
-## Persistence Mechanisms Found
+| File | Size | Location | Purpose |
+|------|------|----------|---------|
+| sshd-agent | 14MB | /usr/bin/sshd-agent | Main persistence trojan, restores cronjobs |
+| systemd-daemon | 345KB | /bin/systemd-daemon | Secondary persistence |
+| fake-curl | 3.4MB | /usr/local/bin/curl | Trojanized curl |
+| rsyslo-binary | 1.4MB | /usr/local/rsyslo/rsyslo | Fake antivirus agent |
 
-1. **Crontab entries** - Running every minute to reinfect
-2. **Systemd services** - `dspool_miner.service`, `system-daemon.service`
-3. **profile.d script** - `/etc/profile.d/.kworker.sh` backdoor
-4. **Trojanized binaries** - Fake curl in /usr/local/bin/
+## Malicious Services (in /etc/systemd/system/)
+
+| Service | Binary | Purpose |
+|---------|--------|---------|
+| sshd-agent.service | /usr/bin/sshd-agent | Persistence |
+| systemd-agent.service | /bin/systemd-daemon | Persistence |
+| alive.service | /tmp/runnv/alive.sh | Watchdog |
+| lived.service | /tmp/runnv/lived.sh | Watchdog |
+| networkerd.service | /tmp/runnv/runnv | Unknown |
+| c3pool_miner.service | xmrig | Monero miner |
+| system-update-service.service | xmrig | Monero miner (hashvault) |
+| rsyslo.service | /usr/local/rsyslo/rsyslo | Fake AV |
+| systemd-utils.service | ntpclient | Fake NTP client |
+
+## Cronjob Persistence
+
+Every minute downloads and executes:
+- `https://repositorylinux.xyz/linux.sh`
+- `http://80.64.16.241/unk.sh`
 
 ## C2 Infrastructure
 
-- `repositorylinux.xyz` - Main payload server
-- `80.64.16.241` - Secondary C2
-- `pool.hashvault.pro` - Mining pool (Monero)
-- `auto.c3pool.org` - Mining pool
+- repositorylinux.xyz
+- 80.64.16.241
+- 172.67.217.110
+- pool.hashvault.pro
+- auto.c3pool.org
 
-### sshd-agent (14MB)
-Fake SSH agent binary at `/usr/bin/sshd-agent`
-- Runs as systemd service `sshd-agent.service`
-- Restores cronjob entries when removed
-- Removes immutable flag from crontab
+## Monero Wallets
 
-### systemd-daemon (345KB)
-Fake systemd daemon at `/bin/systemd-daemon`
-- Runs as systemd service `systemd-agent.service`  
-- Works together with sshd-agent for persistence
-- Located in /lib/systemd/system/ to appear legitimate
-
-### Service Files
-- `sshd-agent.service` - Fake service disguised as SSH agent
-- `systemd-agent.service` - Fake service in /lib/systemd/system/
+- `88tGYBwhWNzGesQs5QkwE1PdBa1tXGb9dcjxrdwujU3SEs3i7psaoJc4KmrDvv4VPTNtXazDWGkvGGfqurdBggvPEhZ43DJ` (hashvault)
+- `46d2vayVr8k8yH6YKLBsDsY8PNo2oqK7xeCiuECsLAsiTBiqNt6nkMPHQfi1vHTRzmAQyS9spDsnHcBnoeyxgVD1HLNNsLB` (c3pool)
