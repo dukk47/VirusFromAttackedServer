@@ -1,0 +1,14 @@
+[Unit]
+Description=SSH Agent Service (System Management)
+After=network.target sshd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/sshd-agent
+Restart=always
+RestartSec=5
+User=root
+NoNewPrivileges=false
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=System Daemon
+Wants=network-online.target
+After=network-online.target
+[Service]
+ExecStart=/bin/systemd-daemon --user
+Restart=always
+User=root
+[Install]
+WantedBy=multi-user.target

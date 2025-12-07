@@ -27,3 +27,19 @@ Trojanized curl binary placed in `/usr/local/bin/curl` to intercept curl command
 - `80.64.16.241` - Secondary C2
 - `pool.hashvault.pro` - Mining pool (Monero)
 - `auto.c3pool.org` - Mining pool
+
+### sshd-agent (14MB)
+Fake SSH agent binary at `/usr/bin/sshd-agent`
+- Runs as systemd service `sshd-agent.service`
+- Restores cronjob entries when removed
+- Removes immutable flag from crontab
+
+### systemd-daemon (345KB)
+Fake systemd daemon at `/bin/systemd-daemon`
+- Runs as systemd service `systemd-agent.service`  
+- Works together with sshd-agent for persistence
+- Located in /lib/systemd/system/ to appear legitimate
+
+### Service Files
+- `sshd-agent.service` - Fake service disguised as SSH agent
+- `systemd-agent.service` - Fake service in /lib/systemd/system/
