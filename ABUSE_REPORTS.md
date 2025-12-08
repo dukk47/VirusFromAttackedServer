@@ -12,7 +12,7 @@
 | 1 | GitHub | ✅ **GESENDET** | 2025-12-08 |
 | 2 | Pastebin | ✅ **GESENDET** | 2025-12-08 |
 | 3 | publicvm.com (Mining Proxy) | ✅ **GESENDET** | 2025-12-08 |
-| 4 | Rumahweb (Domain Registrar) | 📝 Ausstehend | - |
+| 4 | Rumahweb (Domain Registrar) | ✅ **GESENDET** | 2025-12-08 |
 | 5 | Polizei / LKA | 📝 Optional | - |
 | 6 | Mining Pools | 📝 Optional | - |
 
@@ -150,7 +150,7 @@ Regards,
 
 **Registrar:** CV. Rumahweb Indonesia
 **Abuse E-Mail:** abuse@rumahweb.co.id
-**Status:** 📝 Ausstehend
+**Status:** ✅ **GESENDET** (2025-12-08)
 
 **Betreff:** URGENT: Malware Distribution Domain - Immediate Action Required - repositorylinux.xyz
 
@@ -273,18 +273,16 @@ Evidence: https://github.com/dukk47/VirusFromAttackedServer
 
 ## Erwartete Wirkung
 
-Nach den 3 gesendeten Reports:
+Alle kritischen Reports gesendet:
 
 ```
 ✅ GitHub     → Repos werden gelöscht, Account gesperrt
 ✅ Pastebin   → Fallback-Config offline
 ✅ publicvm   → Mining-Proxy tot
+✅ Rumahweb   → Dropper-Domain offline
 
-= Sein Botnet ist effektiv tot! 🎉
+= Sein komplettes Botnet ist tot! 🎉
 ```
-
-Noch ausstehend für vollständige Abschaltung:
-- Rumahweb → Dropper-Domain offline
 
 ---
 
