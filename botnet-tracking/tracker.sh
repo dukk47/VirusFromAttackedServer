@@ -7,12 +7,12 @@
 # Holt automatisch historische Daten von der API
 #
 # Nutzung:
-#   ./tracker.sh              # Aktuelle Stats + History sync
-#   ./tracker.sh --loop       # Endlosschleife (alle 5 Min)
-#   ./tracker.sh --status     # Verlauf anzeigen
-#   ./tracker.sh --graph      # ASCII Graph (Hashrate)
-#   ./tracker.sh --workers    # ASCII Graph (Workers)
-#   ./tracker.sh --list       # Liste aller infizierten Server
+#   ./tracker.sh                  # Aktuelle Stats + History sync
+#   ./tracker.sh --loop           # Endlosschleife (alle 5 Min)
+#   ./tracker.sh --graph [5|60]   # Hashrate Graph (5min oder 60min Intervall)
+#   ./tracker.sh --workers [5|60] # Worker Graph (5min oder 60min Intervall)
+#   ./tracker.sh --list           # Liste aller infizierten Server
+#   ./tracker.sh --status         # Verlauf anzeigen
 # ============================================
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -177,6 +177,8 @@ print(f\"{d['hash']/1000:.2f} {d['hash2']/1000:.2f} {d['amtPaid']/1e12:.6f} {d['
 
 # ASCII Graph Hashrate
 show_graph() {
+    local INTERVAL_MIN="${1:-60}"  # Default 60 Minuten
+
     if [ ! -f "$LOGFILE" ] || [ $(wc -l < "$LOGFILE") -lt 3 ]; then
         echo -e "${RED}Nicht genug Daten für Graph${NC}"
         return 1
@@ -184,14 +186,17 @@ show_graph() {
 
     echo ""
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "  ${BOLD}HASHRATE VERLAUF${NC}"
+    echo -e "  ${BOLD}HASHRATE VERLAUF${NC} (${INTERVAL_MIN} Min Intervall)"
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
 
-    python3 << 'PYTHON'
+    python3 - "$INTERVAL_MIN" << 'PYTHON'
 import csv
+import sys
 from datetime import datetime
 from collections import defaultdict
+
+interval_min = int(sys.argv[1]) if len(sys.argv) > 1 else 60
 
 data = []
 with open('hashrate_log.csv', 'r') as f:
@@ -208,18 +213,30 @@ if not data:
     print("  Keine Daten")
     exit()
 
-hourly = defaultdict(list)
+# Gruppieren nach Intervall
+grouped = defaultdict(list)
 for ts, hr in data:
-    hour = datetime.fromtimestamp(ts).strftime('%m-%d %H:00')
-    hourly[hour].append(hr)
+    if interval_min == 5:
+        # 5-Minuten-Intervalle
+        bucket = (ts // 300) * 300
+        label = datetime.fromtimestamp(bucket).strftime('%m-%d %H:%M')
+    else:
+        # Stunden-Intervalle
+        bucket = (ts // 3600) * 3600
+        label = datetime.fromtimestamp(bucket).strftime('%m-%d %H:00')
+    grouped[label].append(hr)
 
-hourly_avg = {h: sum(v)/len(v) for h, v in hourly.items()}
-hours = sorted(hourly_avg.keys())[-48:]
-max_hr = max(hourly_avg.values()) if hourly_avg else 1
+# Durchschnitt pro Intervall
+avg_data = {k: sum(v)/len(v) for k, v in grouped.items()}
 
-width = 50
-for hour in hours:
-    hr = hourly_avg[hour]
+# Letzte N Einträge
+max_entries = 60 if interval_min == 5 else 48
+labels = sorted(avg_data.keys())[-max_entries:]
+max_hr = max(avg_data[l] for l in labels) if labels else 1
+
+width = 45
+for label in labels:
+    hr = avg_data[label]
     bar_len = int((hr / max_hr) * width)
     bar = '█' * bar_len
     if hr < 100:
@@ -228,7 +245,7 @@ for hour in hours:
         color = '\033[1;33m'
     else:
         color = '\033[0;31m'
-    print(f"  {hour} │{color}{bar}\033[0m {hr:.0f} KH/s")
+    print(f"  {label} │{color}{bar}\033[0m {hr:.0f} KH/s")
 
 print("")
 print(f"  ────────────────────────────────────────────────────────────────────")
@@ -253,22 +270,26 @@ PYTHON
 
 # ASCII Graph Workers
 show_workers_graph() {
-    if [ ! -f "$WORKERS_LOG" ] || [ $(wc -l < "$WORKERS_LOG") -lt 3 ]; then
-        echo -e "${RED}Nicht genug Worker-Daten${NC}"
-        echo -e "${YELLOW}Starte --loop um Worker-Daten zu sammeln${NC}"
-        return 1
+    local INTERVAL_MIN="${1:-60}"  # Default 60 Minuten
+
+    if [ ! -f "$WORKERS_LOG" ] || [ $(wc -l < "$WORKERS_LOG") -lt 2 ]; then
+        echo -e "${YELLOW}Noch keine Worker-Daten - hole aktuelle...${NC}"
+        log_workers > /dev/null
     fi
 
     echo ""
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "  ${BOLD}WORKER (INFIZIERTE SERVER) VERLAUF${NC}"
+    echo -e "  ${BOLD}WORKER (INFIZIERTE SERVER) VERLAUF${NC} (${INTERVAL_MIN} Min Intervall)"
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
 
-    python3 << 'PYTHON'
+    python3 - "$INTERVAL_MIN" << 'PYTHON'
 import csv
+import sys
 from datetime import datetime
 from collections import defaultdict
+
+interval_min = int(sys.argv[1]) if len(sys.argv) > 1 else 60
 
 data = []
 with open('workers_log.csv', 'r') as f:
@@ -282,31 +303,40 @@ with open('workers_log.csv', 'r') as f:
             pass
 
 if not data:
-    print("  Keine Daten - starte ./tracker.sh --loop")
+    print("  Keine Daten - starte ./tracker.sh --loop für kontinuierliches Tracking")
+    print("")
+    print("  Aktueller Stand wird einmalig angezeigt...")
     exit()
 
-# Nach Stunden gruppieren
-hourly = defaultdict(list)
+# Gruppieren nach Intervall
+grouped = defaultdict(list)
 for ts, wc in data:
-    hour = datetime.fromtimestamp(ts).strftime('%m-%d %H:00')
-    hourly[hour].append(wc)
+    if interval_min == 5:
+        bucket = (ts // 300) * 300
+        label = datetime.fromtimestamp(bucket).strftime('%m-%d %H:%M')
+    else:
+        bucket = (ts // 3600) * 3600
+        label = datetime.fromtimestamp(bucket).strftime('%m-%d %H:00')
+    grouped[label].append(wc)
 
-hourly_avg = {h: sum(v)/len(v) for h, v in hourly.items()}
-hours = sorted(hourly_avg.keys())[-48:]
-max_wc = max(hourly_avg.values()) if hourly_avg else 1
+avg_data = {k: sum(v)/len(v) for k, v in grouped.items()}
 
-width = 50
-for hour in hours:
-    wc = hourly_avg[hour]
+max_entries = 60 if interval_min == 5 else 48
+labels = sorted(avg_data.keys())[-max_entries:]
+max_wc = max(avg_data[l] for l in labels) if labels else 1
+
+width = 45
+for label in labels:
+    wc = avg_data[label]
     bar_len = int((wc / max_wc) * width)
     bar = '▓' * bar_len
-    if wc < 10:
+    if wc < 100:
         color = '\033[0;32m'
-    elif wc < 30:
+    elif wc < 300:
         color = '\033[1;33m'
     else:
         color = '\033[0;31m'
-    print(f"  {hour} │{color}{bar}\033[0m {wc:.0f} Server")
+    print(f"  {label} │{color}{bar}\033[0m {wc:.0f} Server")
 
 print("")
 print(f"  ────────────────────────────────────────────────────────────────────")
@@ -321,8 +351,10 @@ print(f"  Minimum:  {min_val} Server")
 print(f"  Aktuell:  {last_wc} Server")
 if change < 0:
     print(f"  Trend:    \033[0;32m{change} Server\033[0m (werden weniger!)")
-else:
+elif change > 0:
     print(f"  Trend:    \033[0;31m+{change} Server\033[0m")
+else:
+    print(f"  Trend:    {change} Server (stabil)")
 PYTHON
 
     echo ""
@@ -389,6 +421,26 @@ run_loop() {
     done
 }
 
+# Help
+show_help() {
+    echo ""
+    echo -e "${BOLD}BOTNET TRACKER${NC} - Überwacht Angreifer-Wallet auf C3Pool"
+    echo ""
+    echo -e "${YELLOW}Nutzung:${NC}"
+    echo "  ./tracker.sh                  Aktuelle Stats anzeigen"
+    echo "  ./tracker.sh --loop           Kontinuierlich tracken (alle 5 Min)"
+    echo "  ./tracker.sh --graph [5|60]   Hashrate Graph (5 oder 60 Min Intervall)"
+    echo "  ./tracker.sh --workers [5|60] Worker Graph (5 oder 60 Min Intervall)"
+    echo "  ./tracker.sh --list           Liste aller infizierten Server"
+    echo "  ./tracker.sh --status         Letzte Messungen anzeigen"
+    echo ""
+    echo -e "${YELLOW}Beispiele:${NC}"
+    echo "  ./tracker.sh --graph          Hashrate pro Stunde"
+    echo "  ./tracker.sh --graph 5        Hashrate alle 5 Minuten"
+    echo "  ./tracker.sh --workers 5      Worker alle 5 Minuten"
+    echo ""
+}
+
 # Main
 init_log
 
@@ -401,10 +453,10 @@ case "$1" in
         show_status
         ;;
     --graph|-g)
-        show_graph
+        show_graph "$2"
         ;;
     --workers|-w)
-        show_workers_graph
+        show_workers_graph "$2"
         ;;
     --list)
         list_workers
@@ -412,16 +464,19 @@ case "$1" in
     --sync)
         sync_history
         ;;
+    --help|-h)
+        show_help
+        ;;
     *)
         sync_history
         log_current
         echo ""
         echo -e "  ${YELLOW}Befehle:${NC}"
-        echo -e "    ./tracker.sh --loop     Kontinuierlich tracken"
-        echo -e "    ./tracker.sh --graph    Hashrate Graph"
-        echo -e "    ./tracker.sh --workers  Worker Graph"
-        echo -e "    ./tracker.sh --list     Liste infizierter Server"
-        echo -e "    ./tracker.sh --status   Letzte Messungen"
+        echo -e "    ./tracker.sh --loop         Kontinuierlich tracken"
+        echo -e "    ./tracker.sh --graph [5|60] Hashrate Graph"
+        echo -e "    ./tracker.sh --workers [5|60] Worker Graph"
+        echo -e "    ./tracker.sh --list         Liste infizierter Server"
+        echo -e "    ./tracker.sh --help         Hilfe anzeigen"
         echo ""
         ;;
 esac
