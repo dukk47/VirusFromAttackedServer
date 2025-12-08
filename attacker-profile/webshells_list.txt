@@ -1,0 +1,40 @@
+# PHP Webshells von whereveryouare666/0xShell
+# Repository: https://github.com/whereveryouare666/0xShell
+# Beschreibung: "Shell Bypass For All Server WAF"
+
+# Haupt-Shells
+0x.php
+0xObs.php                 # Obfuskierte Version
+0xShell.php               # Haupt-Webshell
+0xShellObs.php            # Obfuskierte Version
+0xShellori.php            # Original Version
+
+# JavaScript (Encoding/Obfuskation)
+0xencbase.js
+wesobase.js
+
+# Weitere Shells
+1337.php                  # "Elite" Shell
+_index.php
+adminer.php               # Datenbank-Admin (legitimes Tool, missbraucht)
+crot.php
+f.php
+index.php
+lndex.php                 # Typosquatting: l statt I
+log_update.php
+login.php
+logout.php
+memek.php
+root.php                  # Privilege Escalation
+tifa.png.php              # Getarnt als Bild-Datei
+untitled.php
+up.php                    # Upload-Funktionalität
+weso.php
+wesoori.php
+xoxo.php
+
+# Textdatei
+f.txt
+
+# Dokumentation
+README.md
