@@ -1,0 +1,28 @@
+[package]
+name = "ds"
+version = "1.2.8"
+edition = "2021"
+authors = ["Drew Alleman"]
+repository = "https://github.com/Drew-Alleman/DataSurgeon/"
+license = "Apache 2.0"
+description = "Quickly Extracts IP's, Email Addresses, Hashes, Files, Credit Cards, Social Secuirty Numbers and More From Text"
+categories = ["osint", "email", "regex", "incident-response", "hacking", "ip-address", "rust-lang", "cybersecurity", "bug-bounty", "infosec", "pentesting", "recon", "ctf-tools", "file-search", "security-tools", "reconnaissance", "search-tools"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# Networking dependencies for downloading and updating plugins
+reqwest = { version="0.11.18" , features = ["blocking"] }
+
+# Serialization dependencies
+serde = { version="1.0.174" , features = ["derive"] }
+serde_json = "1.0.103"
+
+# File and directory handling dependencies
+walkdir = "2.3.3"
+
+# Command line parsing dependencies
+clap = "4.1.8"
+
+# Regular expression dependencies
+regex = "1.7.1"
