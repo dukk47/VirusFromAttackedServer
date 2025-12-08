@@ -5,13 +5,27 @@
 
 ---
 
+## Status Übersicht
+
+| # | Empfänger | Status | Datum |
+|---|-----------|--------|-------|
+| 1 | GitHub | ✅ **GESENDET** | 2025-12-08 |
+| 2 | Pastebin | ✅ **GESENDET** | 2025-12-08 |
+| 3 | publicvm.com (Mining Proxy) | ✅ **GESENDET** | 2025-12-08 |
+| 4 | Rumahweb (Domain Registrar) | 📝 Ausstehend | - |
+| 5 | Polizei / LKA | 📝 Optional | - |
+| 6 | Mining Pools | 📝 Optional | - |
+
+---
+
 ## 1. GitHub - Account & Repositories melden
 
 **URL:** https://github.com/contact/report-abuse
+**Status:** ✅ **GESENDET** (2025-12-08)
 
 **Betreff:** Malware distribution via GitHub repositories
 
-**Report Text (Copy & Paste):**
+**Report Text:**
 
 ```
 I am reporting malicious repositories used for cryptominer botnet distribution.
@@ -57,6 +71,7 @@ Thank you.
 ## 2. Pastebin - Config-Fallback melden
 
 **URL:** https://pastebin.com/report/5LRZX6XQ
+**Status:** ✅ **GESENDET** (2025-12-08)
 
 **Report Text:**
 
@@ -77,14 +92,65 @@ Please remove this paste.
 
 ---
 
-## 3. Domain Registrar - repositorylinux.xyz melden
+## 3. Hosting Provider - Mining Proxy melden
 
-**Erst WHOIS prüfen:**
-```bash
-whois repositorylinux.xyz
+**Domain:** cyberknull.publicvm.com
+**Service:** publicvm.com (free dynamic DNS)
+**Status:** ✅ **GESENDET** (2025-12-08)
+
+**Gesendete E-Mail:**
+
+```
+To the Abuse Department / Legal Team,
+
+I am formally reporting a subdomain hosted on your infrastructure that is
+actively being used as a critical component (Stratum mining proxy) for an
+illegal cryptocurrency botnet.
+
+NOTICE OF LIABILITY: By receiving this detailed report and forensic evidence,
+you are now officially on notice regarding the criminal nature of this resource.
+Continued hosting of cyberknull.publicvm.com following this notification
+constitutes knowingly facilitating illegal cyber activities. Failure to suspend
+this domain immediately may result in your organization being viewed as complicit
+in the maintenance of this botnet infrastructure.
+
+TARGET:
+
+Domain: cyberknull.publicvm.com
+Port: 80
+Service: Stratum Mining Proxy (XMR/Monero)
+
+TECHNICAL EVIDENCE:
+Infected servers are forced to connect to this subdomain to mine cryptocurrency
+for the attacker. Configuration extracted from infected hosts:
+
+{
+  "url": "cyberknull.publicvm.com:80",
+  "pass": "lucifer"
+}
+
+FORENSIC ANALYSIS:
+A complete forensic breakdown of the malware and the specific role of your
+subdomain in this attack is available here:
+
+Repository: https://github.com/dukk47/VirusFromAttackedServer
+Reference: See c2-config/config.json and C2_INFRASTRUCTURE.md
+
+ACTION REQUIRED:
+Terminate this subdomain immediately to cease the active criminal activity
+on your network.
+
+Regards,
+[Name]
 ```
 
-**Dann Abuse-Mail an Registrar senden.**
+---
+
+## 4. Domain Registrar - repositorylinux.xyz melden
+
+**Registrar:** CV. Rumahweb Indonesia
+**Abuse E-Mail:** abuse@rumahweb.co.id
+**Status:** 📝 Ausstehend
 
 **Betreff:** Malware distribution domain - repositorylinux.xyz
 
@@ -120,44 +186,10 @@ Please suspend this domain immediately.
 
 ---
 
-## 4. Hosting Provider - Mining Proxy melden
-
-**Domain:** cyberknull.publicvm.com
-**Service:** publicvm.com (free dynamic DNS)
-
-**URL:** Suche nach publicvm.com abuse contact
-
-**Report Text:**
-
-```
-I am reporting a subdomain used as cryptocurrency mining proxy for a botnet.
-
-MALICIOUS SUBDOMAIN: cyberknull.publicvm.com
-PORT: 80
-
-PURPOSE:
-This subdomain is used as a Stratum mining proxy for a cryptomining botnet.
-Infected servers connect to this address to mine Monero cryptocurrency
-for the attacker.
-
-Configuration found on infected servers:
-{
-  "url": "cyberknull.publicvm.com:80",
-  "pass": "lucifer"
-}
-
-EVIDENCE:
-Complete forensic analysis: https://github.com/dukk47/VirusFromAttackedServer
-See: c2-config/config.json and C2_INFRASTRUCTURE.md
-
-Please terminate this subdomain.
-```
-
----
-
 ## 5. Polizei / LKA - Strafanzeige (Optional)
 
 **Zuständig:** LKA Cybercrime deines Bundeslandes
+**Status:** 📝 Optional
 
 **Online-Anzeige möglich in vielen Bundesländern:**
 - NRW: https://polizei.nrw/internetwache
@@ -181,6 +213,8 @@ Please terminate this subdomain.
 
 ## 6. Mining Pools informieren (Optional)
 
+**Status:** 📝 Optional
+
 Falls die Wallet-Adressen noch aktiv sind:
 
 **Hashvault:** support@hashvault.pro
@@ -200,16 +234,32 @@ Evidence: https://github.com/dukk47/VirusFromAttackedServer
 
 ---
 
-## Reihenfolge der Meldungen
+## Erwartete Wirkung
 
-1. **GitHub** (wichtigste - killt seine Repos)
-2. **Pastebin** (Fallback weg)
-3. **publicvm.com** (Mining-Proxy weg)
-4. **Domain Registrar** (Dropper offline)
-5. Polizei (optional, für Strafverfolgung)
+Nach den 3 gesendeten Reports:
 
-**Nach 1-3 ist sein Botnet effektiv tot.**
+```
+✅ GitHub     → Repos werden gelöscht, Account gesperrt
+✅ Pastebin   → Fallback-Config offline
+✅ publicvm   → Mining-Proxy tot
+
+= Sein Botnet ist effektiv tot! 🎉
+```
+
+Noch ausstehend für vollständige Abschaltung:
+- Rumahweb → Dropper-Domain offline
+
+---
+
+## Antworten Log
+
+*(Hier Antworten dokumentieren wenn sie kommen)*
+
+| Datum | Von | Antwort |
+|-------|-----|---------|
+| - | - | - |
 
 ---
 
 *Erstellt: 2025-12-08*
+*Letzte Aktualisierung: 2025-12-08*
