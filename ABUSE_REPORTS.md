@@ -10,6 +10,7 @@
 | # | Empfänger | Status | Datum |
 |---|-----------|--------|-------|
 | 1 | GitHub | ✅ **GESENDET** | 2025-12-08 |
+| 1b | GitHub (Follow-Up) | ✅ **GESENDET** | 2025-12-08 |
 | 2 | Pastebin | ✅ **GESENDET** | 2025-12-08 |
 | 3 | publicvm.com (Mining Proxy) | ✅ **GESENDET** | 2025-12-08 |
 | 4 | Rumahweb (Domain Registrar) | ✅ **GESENDET** | 2025-12-08 |
