@@ -1,0 +1,7 @@
+requests==2.32.3
+urllib3==2.2.3
+stripe==10.15.0
+colorama==0.4.6
+certifi==2024.8.30
+idna==3.7
+charset-normalizer==3.3.2
